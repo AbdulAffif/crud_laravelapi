@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+
 use Validator;
+
 
 class UserController extends Controller
 {
@@ -30,17 +32,27 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required',
             'c_password' => 'required|same:password',
+            'nomer_telepon' => 'required',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);            
         }
 
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
-        $success['token'] =  $user->createToken('nApp')->accessToken;
-        $success['name'] =  $user->name;
+        try{
+
+            $input = $request->all();
+            $input['password'] = bcrypt($input['password']);
+            $user = User::create($input);
+
+            $success['token'] =  $user->createToken('nApp')->accessToken;
+            $success['name'] =  $user->name;
+
+        }catch(\Exception $e)
+        {
+            return response()->json(['error'=> 'register error'], 500);
+        }
+        
 
         return response()->json(['success'=>$success], $this->successStatus);
     }
@@ -64,5 +76,10 @@ class UserController extends Controller
             return response()->json(['error'=>'Login first'], 401);
         }
         
+    }
+
+    public function unAuthorize()
+    {
+        return response()->json(['error'=> 'unauthorize'], 403);
     }
 }

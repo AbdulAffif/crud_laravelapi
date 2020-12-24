@@ -15,24 +15,15 @@ class BarangController extends Controller
 
     public function simpan(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'kode_sku' => 'required',
-            'nama_barang' => 'required',
-            'foto_barang' => 'required|image:jpeg,png,jpg,gif,svg|max:2048',
-            'qty' => 'required',
-            'harga_satuan' => 'required',
-        ]);
+        
+        $this->valid($request);
 
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);            
-        }
+        
         $uploadFolder = 'barangs';
         $image = $request->file('foto_barang');
         $image_uploaded_path = $image->store($uploadFolder, 'public');
         $input = $request->all();
         $input['foto_barang'] = basename($image_uploaded_path);
-        $user = Auth::user();
-
         $barangs = Barangs::create($input);
 
         if($barangs)
@@ -45,18 +36,11 @@ class BarangController extends Controller
     }
     public function update(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'kode_sku' => 'required',
-            'nama_barang' => 'required',
-            'foto_barang' => 'required|image:jpeg,png,jpg,gif,svg|max:2048',
-            'qty' => 'required',
-            'harga_satuan' => 'required',
-        ]);
+        $this->valid($request);
 
-        if ($validator->fails()) {
-            return response()->json(['error'=>$validator->errors()], 401);            
+        if ($valid->fails()) {
+            return response()->json(['error'=>$valid->errors()], 401);            
         }
-        $user = Auth::user();
 
         $uploadFolder = 'barangs';
         $image = $request->file('foto_barang');
@@ -79,7 +63,6 @@ class BarangController extends Controller
     }
     public function delete($id)
     {
-        $user = Auth::user();
         $barangs = Barangs::where('id',$id)->delete();
         
         if($barangs)
@@ -91,7 +74,7 @@ class BarangController extends Controller
     }
     public function find($id)
     {
-        $user = Auth::user();
+                
         $barangs = Barangs::where('id',$id)->get();
         
         if($barangs)
@@ -103,7 +86,7 @@ class BarangController extends Controller
     }
     public function cari(Request $request)
     {
-        $user = Auth::user();
+        
         if($request->param=='id')
         {
             $barangs = Barangs::where('id',$request->keyword)->get();
@@ -124,6 +107,22 @@ class BarangController extends Controller
             return response()->json(['error'=>'Not Found'], 404);
         }
         
+    }
+
+
+    private function valid(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+                'kode_sku' => 'required',
+                'nama_barang' => 'required',
+                'foto_barang' => 'required|image:jpeg,png,jpg,gif,svg|max:2048',
+                'qty' => 'required',
+                'harga_satuan' => 'required',
+            ]);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 400);            
+        }
+        return $validator;
     }
     
 }

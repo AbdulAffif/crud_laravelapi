@@ -14,10 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('login', 'API\UserController@login');
-Route::post('register', 'API\UserController@register');
+Route::post('login', 'Api\UserController@login');
+Route::post('register', 'Api\UserController@register');
 
 Route::group(['middleware' => 'auth:api'], function(){
+
     Route::post('showusers', 'Api\UserController@showusers');
     Route::post('barangs/simpan', 'Api\BarangController@simpan');
     Route::post('barangs/update', 'Api\BarangController@update');
@@ -27,3 +28,5 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     Route::post('logout', 'Api\UserController@logout');
 }); 
+
+
