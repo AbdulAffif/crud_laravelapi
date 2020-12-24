@@ -38,10 +38,6 @@ class BarangController extends Controller
     {
         $this->valid($request);
 
-        if ($valid->fails()) {
-            return response()->json(['error'=>$valid->errors()], 401);            
-        }
-
         $uploadFolder = 'barangs';
         $image = $request->file('foto_barang');
         $image_uploaded_path = $image->store($uploadFolder, 'public');
